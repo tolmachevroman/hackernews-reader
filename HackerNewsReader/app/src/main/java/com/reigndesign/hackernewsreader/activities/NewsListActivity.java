@@ -1,6 +1,7 @@
 package com.reigndesign.hackernewsreader.activities;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
@@ -16,7 +17,10 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class NewsListActivity extends AppCompatActivity {
+public class NewsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+
+    @Bind(R.id.swipe_to_refresh_layout)
+    SwipeRefreshLayout swipeToRefreshLayout;
 
     @Bind(R.id.news_list)
     ListView newsList;
@@ -29,7 +33,14 @@ public class NewsListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        swipeToRefreshLayout.setOnRefreshListener(this);
 
+    }
+
+    @Override
+    public void onRefresh() {
+        //TODO check internet connection before
+        getLatestNews();
     }
 
     private void getLatestNews() {
@@ -42,11 +53,15 @@ public class NewsListActivity extends AppCompatActivity {
                 for (NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
                     System.out.println("Date: " + newsPOJO.getCreatedAt());
                 }
+
+                swipeToRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 System.out.println("Error: " + error.getMessage());
+
+                swipeToRefreshLayout.setRefreshing(false);
             }
         });
 
