@@ -37,8 +37,12 @@ public class NewsDetailsActivity extends AppCompatActivity {
         String url = getIntent().getStringExtra(getString(R.string.url));
 
         webView.getSettings().setJavaScriptEnabled(true);
+
+        // fit content to the web view
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
+
+        // hide progress bar when html is loaded
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
