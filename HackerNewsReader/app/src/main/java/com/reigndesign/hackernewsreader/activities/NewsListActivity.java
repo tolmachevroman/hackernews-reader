@@ -3,10 +3,15 @@ package com.reigndesign.hackernewsreader.activities;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.widget.ListView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.reigndesign.hackernewsreader.R;
+import com.reigndesign.hackernewsreader.adapters.NewsAdapter;
+import com.reigndesign.hackernewsreader.adapters.NewsTouchHelper;
+import com.reigndesign.hackernewsreader.adapters.VerticalSpaceItemDecoration;
 import com.reigndesign.hackernewsreader.network.ClientApi;
 import com.reigndesign.hackernewsreader.network.responses.NewsListPOJO;
 import com.reigndesign.hackernewsreader.network.responses.NewsPOJO;
@@ -23,7 +28,9 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     SwipeRefreshLayout swipeToRefreshLayout;
 
     @Bind(R.id.news_list)
-    ListView newsList;
+    RecyclerView newsRecyclerView;
+
+    NewsAdapter newsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +40,26 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        // adapter
+        newsAdapter = new NewsAdapter(this);
+        newsRecyclerView.setAdapter(newsAdapter);
+
+        // recycler view layout manager and vertical space decoration
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        newsRecyclerView.setLayoutManager(linearLayoutManager);
+        newsRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(2));
+
+        // item touch helper to enable swipe to dismiss
+        ItemTouchHelper.Callback callback = new NewsTouchHelper(newsAdapter);
+        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(newsRecyclerView);
+
+        // swipe to refresh listener
         swipeToRefreshLayout.setOnRefreshListener(this);
 
+        // api request
+        getLatestNews();
     }
 
     @Override
@@ -48,13 +73,14 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         ClientApi.getLatestNews(new Callback<NewsListPOJO>() {
             @Override
             public void success(NewsListPOJO newsListPOJO, Response response) {
-                System.out.println("Size: " + newsListPOJO.getNewsPOJOList().size());
 
-                for (NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
-                    System.out.println("Date: " + newsPOJO.getCreatedAt());
-                }
+                newsAdapter.populate(newsListPOJO.getNewsPOJOList());
 
                 swipeToRefreshLayout.setRefreshing(false);
+
+                for(NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
+                    System.out.println("Story title: " + newsPOJO.getStoryTitle());
+                }
             }
 
             @Override
