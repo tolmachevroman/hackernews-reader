@@ -1,5 +1,6 @@
 package com.reigndesign.hackernewsreader.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -71,6 +72,9 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     @Override
     public void onItemClick(String storyUrl) {
         System.out.println("onItemClick: " + storyUrl);
+
+        startActivity(new Intent(this, NewsDetailsActivity.class)
+                .putExtra(getString(R.string.url), storyUrl));
     }
 
     private void getLatestNews() {
