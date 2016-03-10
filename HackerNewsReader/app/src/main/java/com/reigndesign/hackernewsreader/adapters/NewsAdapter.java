@@ -1,6 +1,7 @@
 package com.reigndesign.hackernewsreader.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.reigndesign.hackernewsreader.R;
-import com.reigndesign.hackernewsreader.network.responses.NewsPOJO;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.reigndesign.hackernewsreader.sql.News;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,46 +17,34 @@ import butterknife.ButterKnife;
 /**
  * Created by romantolmachev on 10/3/2016.
  */
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
+public class NewsAdapter extends CursorRecyclerViewAdapter<NewsAdapter.ViewHolder> {
 
-    private Context context;
     private INewsAdapterHolderClick iNewsAdapterHolderClick;
-    private List<NewsPOJO> newsList;
 
-    public NewsAdapter(Context context, INewsAdapterHolderClick iNewsAdapterHolderClick) {
-        this.context = context;
+    public NewsAdapter(Context context, Cursor cursor, INewsAdapterHolderClick iNewsAdapterHolderClick) {
+        super(context, cursor);
         this.iNewsAdapterHolderClick = iNewsAdapterHolderClick;
-        this.newsList = new ArrayList<>();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.adapter_news, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_news, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
 
-        // select either title or storyTitle, which one is not null
-        String title = newsList.get(position).getTitle() != null?
-                newsList.get(position).getTitle() : newsList.get(position).getStoryTitle();
-        holder.title.setText(title);
+        System.out.println("Id: " + cursor.getString(cursor.getColumnIndex(News._ID)));
 
-        holder.authorAndDate.setText(newsList.get(position).getAuthor() + " - " + newsList.get(position).getCreatedAt().toString());
-    }
-
-    @Override
-    public int getItemCount() {
-        return newsList.size();
-    }
-
-    public void populate(List<NewsPOJO> newsList) {
-        this.newsList = newsList;
-        notifyDataSetChanged();
+        viewHolder.title.setText(cursor.getString(cursor.getColumnIndex(News.TITLE)));
+        viewHolder.authorAndDate.setText(cursor.getString(cursor.getColumnIndex(News.AUTHOR)) +
+                " - " + cursor.getString(cursor.getColumnIndex(News.CREATED_AT)));
     }
 
     public void remove(int position) {
-        newsList.remove(position);
+        Cursor cursor = getCursor();
+        cursor.moveToPosition(position);
+        context.getContentResolver().delete(News.CONTENT_URI, News._ID + " = ?", new String[] { cursor.getString(cursor.getColumnIndex(News._ID)) + ""} );
         notifyItemRemoved(position);
     }
 
@@ -78,13 +64,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
         @Override
         public void onClick(View view) {
-            System.out.println("Item position: " + getAdapterPosition());
-
-            // select either url or storyUrl, which one is not null
-            String url = newsList.get(getAdapterPosition()).getUrl() != null?
-                    newsList.get(getAdapterPosition()).getUrl() : newsList.get(getAdapterPosition()).getStoryUrl();
-
-            iNewsAdapterHolderClick.onItemClick(url);
+            iNewsAdapterHolderClick.onItemClick(getCursor().getString(getCursor().getColumnIndex(News.URL)));
         }
     }
 

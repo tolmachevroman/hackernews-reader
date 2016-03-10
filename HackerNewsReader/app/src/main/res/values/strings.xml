@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Hacker News Reader</string>
     <string name="url">url</string>
+    <string name="no_url_for_this_article">No URL for this article</string>
 </resources>

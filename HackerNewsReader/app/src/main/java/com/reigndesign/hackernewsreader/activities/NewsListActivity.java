@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.widget.Toast;
 
 import com.reigndesign.hackernewsreader.R;
 import com.reigndesign.hackernewsreader.adapters.NewsAdapter;
@@ -50,7 +51,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         ButterKnife.bind(this);
 
         // adapter
-        newsAdapter = new NewsAdapter(this, this);
+        newsAdapter = new NewsAdapter(this, null, this);
         newsRecyclerView.setAdapter(newsAdapter);
 
         // recycler view layout manager and vertical space decoration
@@ -68,7 +69,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         swipeToRefreshLayout.setOnRefreshListener(this);
 
         // api request
-        getLatestNews();
+//        getLatestNews();
 
         getLoaderManager().initLoader(1, null, this);
     }
@@ -80,11 +81,15 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     @Override
-    public void onItemClick(String storyUrl) {
-        System.out.println("onItemClick: " + storyUrl);
+    public void onItemClick(String url) {
 
-        startActivity(new Intent(this, NewsDetailsActivity.class)
-                .putExtra(getString(R.string.url), storyUrl));
+        if(url != null) {
+            startActivity(new Intent(this, NewsDetailsActivity.class)
+                    .putExtra(getString(R.string.url), url));
+        } else {
+            Toast.makeText(this, getString(R.string.no_url_for_this_article), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
@@ -93,11 +98,10 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        System.out.println("Cursor size: " + data.getCount());
-//        if (productsAdapter != null && cursor != null) {
-//            productsAdapter.swapCursor(cursor);
-//        }
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (newsAdapter != null && cursor != null) {
+            newsAdapter.swapCursor(cursor);
+        }
     }
 
     @Override
@@ -110,8 +114,6 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         ClientApi.getLatestNews(new Callback<NewsListPOJO>() {
             @Override
             public void success(NewsListPOJO newsListPOJO, Response response) {
-
-                newsAdapter.populate(newsListPOJO.getNewsPOJOList());
 
                 swipeToRefreshLayout.setRefreshing(false);
 
@@ -129,7 +131,9 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
                     contentValues.put(News.AUTHOR, newsPOJO.getAuthor());
 
-                    contentValues.put(News.URL, newsPOJO.getUrl() != null?
+                    contentValues.put(News.CREATED_AT, newsPOJO.getCreatedAt().toString());
+
+                    contentValues.put(News.URL, newsPOJO.getUrl() != null ?
                             newsPOJO.getUrl() : newsPOJO.getStoryUrl());
 
                     queryHandler.startInsert(newsPOJO.getObjectId(), null, News.CONTENT_URI, contentValues);
