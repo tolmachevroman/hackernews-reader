@@ -37,6 +37,8 @@ public class NewsDetailsActivity extends AppCompatActivity {
         String url = getIntent().getStringExtra(getString(R.string.url));
 
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
