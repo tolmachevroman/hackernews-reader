@@ -14,7 +14,6 @@ import com.reigndesign.hackernewsreader.adapters.NewsTouchHelper;
 import com.reigndesign.hackernewsreader.adapters.VerticalSpaceItemDecoration;
 import com.reigndesign.hackernewsreader.network.ClientApi;
 import com.reigndesign.hackernewsreader.network.responses.NewsListPOJO;
-import com.reigndesign.hackernewsreader.network.responses.NewsPOJO;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,8 +69,8 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
     @Override
-    public void onItemClick(String newsUrl) {
-        System.out.println("onItemClick: " + newsUrl);
+    public void onItemClick(String storyUrl) {
+        System.out.println("onItemClick: " + storyUrl);
     }
 
     private void getLatestNews() {
@@ -84,9 +83,9 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
                 swipeToRefreshLayout.setRefreshing(false);
 
-                for(NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
-                    System.out.println("Story title: " + newsPOJO.getStoryTitle());
-                }
+//                for(NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
+//                    System.out.println("Story title: " + newsPOJO.getStoryTitle());
+//                }
             }
 
             @Override

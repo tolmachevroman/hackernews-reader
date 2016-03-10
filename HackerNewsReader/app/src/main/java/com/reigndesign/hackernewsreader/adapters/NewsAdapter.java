@@ -38,7 +38,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.title.setText(newsList.get(position).getStoryTitle());
+
+        // select either title or storyTitle, which one is not null
+        String title = newsList.get(position).getTitle() != null?
+                newsList.get(position).getTitle() : newsList.get(position).getStoryTitle();
+        holder.title.setText(title);
+
         holder.authorAndDate.setText(newsList.get(position).getAuthor() + " - " + newsList.get(position).getCreatedAt().toString());
     }
 
@@ -65,7 +70,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         @Bind(R.id.authorAndDate)
         TextView authorAndDate;
 
-
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -75,11 +79,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         @Override
         public void onClick(View view) {
             System.out.println("Item position: " + getAdapterPosition());
-            iNewsAdapterHolderClick.onItemClick(newsList.get(getAdapterPosition()).getAuthor());
+
+            // select either url or storyUrl, which one is not null
+            String url = newsList.get(getAdapterPosition()).getUrl() != null?
+                    newsList.get(getAdapterPosition()).getUrl() : newsList.get(getAdapterPosition()).getStoryUrl();
+
+            iNewsAdapterHolderClick.onItemClick(url);
         }
     }
 
     public interface INewsAdapterHolderClick {
-        void onItemClick(String newsUrl);
+        void onItemClick(String storyUrl);
     }
 }
