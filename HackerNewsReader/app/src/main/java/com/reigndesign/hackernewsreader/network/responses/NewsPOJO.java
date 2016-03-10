@@ -9,6 +9,9 @@ import java.util.Date;
  */
 public class NewsPOJO {
 
+    @SerializedName("objectID")
+    String objectId;
+
     @SerializedName("title")
     String title;
 
@@ -26,6 +29,10 @@ public class NewsPOJO {
 
     @SerializedName("created_at")
     Date createdAt;
+
+    public int getObjectId() {
+        return Integer.parseInt(objectId);
+    }
 
     public String getTitle() {
         return title;

@@ -1,6 +1,11 @@
 package com.reigndesign.hackernewsreader.activities;
 
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +20,9 @@ import com.reigndesign.hackernewsreader.adapters.NewsTouchHelper;
 import com.reigndesign.hackernewsreader.adapters.VerticalSpaceItemDecoration;
 import com.reigndesign.hackernewsreader.network.ClientApi;
 import com.reigndesign.hackernewsreader.network.responses.NewsListPOJO;
+import com.reigndesign.hackernewsreader.network.responses.NewsPOJO;
+import com.reigndesign.hackernewsreader.sql.News;
+import com.reigndesign.hackernewsreader.sql.QueryHandler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,7 +31,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class NewsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
-        NewsAdapter.INewsAdapterHolderClick {
+        NewsAdapter.INewsAdapterHolderClick, LoaderManager.LoaderCallbacks<Cursor> {
 
     @Bind(R.id.swipe_to_refresh_layout)
     SwipeRefreshLayout swipeToRefreshLayout;
@@ -61,6 +69,8 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
         // api request
         getLatestNews();
+
+        getLoaderManager().initLoader(1, null, this);
     }
 
     @Override
@@ -77,6 +87,24 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
                 .putExtra(getString(R.string.url), storyUrl));
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this, News.CONTENT_URI, null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        System.out.println("Cursor size: " + data.getCount());
+//        if (productsAdapter != null && cursor != null) {
+//            productsAdapter.swapCursor(cursor);
+//        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
     private void getLatestNews() {
 
         ClientApi.getLatestNews(new Callback<NewsListPOJO>() {
@@ -87,9 +115,26 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
                 swipeToRefreshLayout.setRefreshing(false);
 
-//                for(NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
-//                    System.out.println("Story title: " + newsPOJO.getStoryTitle());
-//                }
+                // insert news asynchronously to the database
+                QueryHandler queryHandler = new QueryHandler(getContentResolver());
+
+                for(NewsPOJO newsPOJO : newsListPOJO.getNewsPOJOList()) {
+
+                    ContentValues contentValues = new ContentValues();
+
+                    contentValues.put(News._ID, newsPOJO.getObjectId());
+
+                    contentValues.put(News.TITLE, newsPOJO.getTitle() != null?
+                            newsPOJO.getTitle() : newsPOJO.getStoryTitle());
+
+                    contentValues.put(News.AUTHOR, newsPOJO.getAuthor());
+
+                    contentValues.put(News.URL, newsPOJO.getUrl() != null?
+                            newsPOJO.getUrl() : newsPOJO.getStoryUrl());
+
+                    queryHandler.startInsert(newsPOJO.getObjectId(), null, News.CONTENT_URI, contentValues);
+                }
+
             }
 
             @Override
