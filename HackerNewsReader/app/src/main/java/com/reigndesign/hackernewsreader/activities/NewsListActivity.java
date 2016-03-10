@@ -22,7 +22,8 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class NewsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class NewsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
+        NewsAdapter.INewsAdapterHolderClick {
 
     @Bind(R.id.swipe_to_refresh_layout)
     SwipeRefreshLayout swipeToRefreshLayout;
@@ -41,7 +42,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         ButterKnife.bind(this);
 
         // adapter
-        newsAdapter = new NewsAdapter(this);
+        newsAdapter = new NewsAdapter(this, this);
         newsRecyclerView.setAdapter(newsAdapter);
 
         // recycler view layout manager and vertical space decoration
@@ -66,6 +67,11 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     public void onRefresh() {
         //TODO check internet connection before
         getLatestNews();
+    }
+
+    @Override
+    public void onItemClick(String newsUrl) {
+        System.out.println("onItemClick: " + newsUrl);
     }
 
     private void getLatestNews() {

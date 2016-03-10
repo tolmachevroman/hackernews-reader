@@ -22,10 +22,12 @@ import butterknife.ButterKnife;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     private Context context;
+    private INewsAdapterHolderClick iNewsAdapterHolderClick;
     private List<NewsPOJO> newsList;
 
-    public NewsAdapter(Context context) {
+    public NewsAdapter(Context context, INewsAdapterHolderClick iNewsAdapterHolderClick) {
         this.context = context;
+        this.iNewsAdapterHolderClick = iNewsAdapterHolderClick;
         this.newsList = new ArrayList<>();
     }
 
@@ -55,7 +57,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         notifyItemRemoved(position);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Bind(R.id.title)
         TextView title;
@@ -63,9 +65,21 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         @Bind(R.id.authorAndDate)
         TextView authorAndDate;
 
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            System.out.println("Item position: " + getAdapterPosition());
+            iNewsAdapterHolderClick.onItemClick(newsList.get(getAdapterPosition()).getAuthor());
+        }
+    }
+
+    public interface INewsAdapterHolderClick {
+        void onItemClick(String newsUrl);
     }
 }
