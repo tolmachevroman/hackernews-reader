@@ -44,7 +44,7 @@ public class NewsDetailsActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
-                
+
             }
         });
         webView.loadUrl(url);
