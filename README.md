@@ -1,6 +1,7 @@
 # hackernews-reader
 Loads and shows the latest Android related Hacker News articles
 
+![Demo](https://cloud.githubusercontent.com/assets/560815/13704872/d0c2cbc8-e77c-11e5-9134-dfc64bdb481e.gif)
 
 **The core arquitecture is based on:**
 
