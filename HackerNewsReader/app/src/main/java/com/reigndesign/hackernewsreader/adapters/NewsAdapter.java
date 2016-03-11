@@ -34,8 +34,7 @@ public class NewsAdapter extends CursorRecyclerViewAdapter<NewsAdapter.ViewHolde
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
 
-        System.out.println("Id: " + cursor.getString(cursor.getColumnIndex(News._ID)));
-
+        viewHolder.title.setTag(viewHolder.getAdapterPosition());
         viewHolder.title.setText(cursor.getString(cursor.getColumnIndex(News.TITLE)));
         viewHolder.authorAndDate.setText(cursor.getString(cursor.getColumnIndex(News.AUTHOR)) +
                 " - " + cursor.getString(cursor.getColumnIndex(News.CREATED_AT)));
@@ -44,8 +43,9 @@ public class NewsAdapter extends CursorRecyclerViewAdapter<NewsAdapter.ViewHolde
     public void remove(int position) {
         Cursor cursor = getCursor();
         cursor.moveToPosition(position);
-        context.getContentResolver().delete(News.CONTENT_URI, News._ID + " = ?", new String[] { cursor.getString(cursor.getColumnIndex(News._ID)) + ""} );
+        context.getContentResolver().delete(News.CONTENT_URI, News._ID + " = ?", new String[]{cursor.getString(cursor.getColumnIndex(News._ID)) + ""});
         notifyItemRemoved(position);
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -64,6 +64,8 @@ public class NewsAdapter extends CursorRecyclerViewAdapter<NewsAdapter.ViewHolde
 
         @Override
         public void onClick(View view) {
+
+            getCursor().moveToPosition((int)title.getTag());
             iNewsAdapterHolderClick.onItemClick(getCursor().getString(getCursor().getColumnIndex(News.URL)));
         }
     }
