@@ -24,6 +24,7 @@ import com.reigndesign.hackernewsreader.network.responses.NewsListPOJO;
 import com.reigndesign.hackernewsreader.network.responses.NewsPOJO;
 import com.reigndesign.hackernewsreader.sql.News;
 import com.reigndesign.hackernewsreader.sql.QueryHandler;
+import com.reigndesign.hackernewsreader.utils.Utils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -68,16 +69,20 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         // swipe to refresh listener
         swipeToRefreshLayout.setOnRefreshListener(this);
 
-        // api request
-//        getLatestNews();
-
         getLoaderManager().initLoader(1, null, this);
+
+        if(Utils.hasActiveInternetConnection(this)) {
+            getLatestNews();
+        }
     }
 
     @Override
     public void onRefresh() {
-        //TODO check internet connection before
-        getLatestNews();
+        if(Utils.hasActiveInternetConnection(this)) {
+            getLatestNews();
+        } else {
+            swipeToRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
