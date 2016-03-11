@@ -1,2 +1,17 @@
 # hackernews-reader
 Loads and shows the latest Android related Hacker News articles
+
+
+**The core arquitecture is based on:**
+
+[Retrofit](http://square.github.io/retrofit/) for the network layer
+
+[ContentProviders](http://developer.android.com/guide/topics/providers/content-providers.html) + SQLite for the database layer
+
+Latest [Design library](http://developer.android.com/tools/support-library/index.html) (RecyclerView, CardView, CoordinatorLayout for animations) for the UI
+
+**Some comments:**
+
+1) [Hacker News API](http://hn.algolia.com/api/v1/search_by_date?query=android) gives unstable json ( **title** or **story_title**, **url** or **story_url** may or may not contain data), so app selectes whatever has valid information. The only reliable **id** I found was **objectID** field, which is used as unique key in the database. 
+
+2) Some News don't contain **url** at all, in these cases app shows a Toast.
