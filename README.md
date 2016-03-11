@@ -13,6 +13,6 @@ Latest [Design library](http://developer.android.com/tools/support-library/index
 
 **Some comments:**
 
-1) [Hacker News API](http://hn.algolia.com/api/v1/search_by_date?query=android) gives unstable json ( **title** or **story_title**, **url** or **story_url** may or may not contain data), so app selectes whatever has valid information. The only reliable **id** I found was **objectID** field, which is used as unique key in the database. 
+1) [Hacker News API](http://hn.algolia.com/api/v1/search_by_date?query=android) gives unstable json ( **title** or **story_title**, **url** or **story_url** may or may not contain data), so app filters whatever field brings the valid information. The only reliable **id** I found was **objectID** field, which is used as unique key in the database. 
 
 2) Some News don't contain **url** at all, in these cases app shows a Toast.
