@@ -3,11 +3,11 @@ package com.reigndesign.hackernewsreader.network;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.reigndesign.hackernewsreader.network.responses.NewsListPOJO;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
@@ -32,11 +32,6 @@ public class ClientApi {
             }
         };
 
-        // 2016-03-10T11:54:12.000Z
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .create();
-
         // connection timeout settings
         OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.setReadTimeout(3, TimeUnit.MINUTES);
@@ -49,7 +44,7 @@ public class ClientApi {
                 .setLog(restLogs)
                 .setClient(new OkClient(okHttpClient))
                 .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setConverter(new GsonConverter(gson))
+                .setConverter(new GsonConverter(new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create()))
                 .build();
 
         service = restAdapter.create(ClientApiDefinitions.class);

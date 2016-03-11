@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import com.reigndesign.hackernewsreader.R;
 import com.reigndesign.hackernewsreader.sql.News;
+import com.reigndesign.hackernewsreader.utils.Utils;
+
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,8 +39,12 @@ public class NewsAdapter extends CursorRecyclerViewAdapter<NewsAdapter.ViewHolde
 
         viewHolder.title.setTag(viewHolder.getAdapterPosition());
         viewHolder.title.setText(cursor.getString(cursor.getColumnIndex(News.TITLE)));
+
+        Date createdAt = new Date(cursor.getLong(cursor.getColumnIndex(News.CREATED_AT)));
+
         viewHolder.authorAndDate.setText(cursor.getString(cursor.getColumnIndex(News.AUTHOR)) +
-                " - " + cursor.getString(cursor.getColumnIndex(News.CREATED_AT)));
+                " - " + Utils.getTimePassed(createdAt, context));
+
     }
 
     public void remove(int position) {
@@ -65,7 +72,7 @@ public class NewsAdapter extends CursorRecyclerViewAdapter<NewsAdapter.ViewHolde
         @Override
         public void onClick(View view) {
 
-            getCursor().moveToPosition((int)title.getTag());
+            getCursor().moveToPosition((int) title.getTag());
             iNewsAdapterHolderClick.onItemClick(getCursor().getString(getCursor().getColumnIndex(News.URL)));
         }
     }

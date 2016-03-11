@@ -111,7 +111,9 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        if (newsAdapter != null) {
+            newsAdapter.swapCursor(null);
+        }
     }
 
     private void getLatestNews() {
@@ -136,7 +138,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
                     contentValues.put(News.AUTHOR, newsPOJO.getAuthor());
 
-                    contentValues.put(News.CREATED_AT, newsPOJO.getCreatedAt().toString());
+                    contentValues.put(News.CREATED_AT, newsPOJO.getCreatedAt().getTime());
 
                     contentValues.put(News.URL, newsPOJO.getUrl() != null ?
                             newsPOJO.getUrl() : newsPOJO.getStoryUrl());
@@ -148,8 +150,6 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
             @Override
             public void failure(RetrofitError error) {
-                System.out.println("Error: " + error.getMessage());
-
                 swipeToRefreshLayout.setRefreshing(false);
             }
         });

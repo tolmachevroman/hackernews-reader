@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "database.db";
 
-    static final int DATABASE_VERSION = 4;
+    static final int DATABASE_VERSION = 5;
 
     @Nullable
     private static DatabaseHelper instance = null;
@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + News.TITLE + " TEXT,"
                 + News.AUTHOR + " TEXT,"
-                + News.CREATED_AT + " TEXT,"
+                + News.CREATED_AT + " INTEGER,"
                 + News.URL + " TEXT);");
 
     }
