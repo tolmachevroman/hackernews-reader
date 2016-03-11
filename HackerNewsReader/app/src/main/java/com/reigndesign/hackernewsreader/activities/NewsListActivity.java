@@ -62,7 +62,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         newsRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(2));
 
         // item touch helper to enable swipe to dismiss
-        ItemTouchHelper.Callback callback = new NewsTouchHelper(newsAdapter);
+        ItemTouchHelper.Callback callback = new NewsTouchHelper(newsAdapter, this);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(newsRecyclerView);
 

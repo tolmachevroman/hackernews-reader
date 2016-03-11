@@ -44,7 +44,7 @@ public class Utils {
 
         if(days == 1) {
             return context.getString(R.string.yesterday);
-        } else if (days == 0) {
+        } else if (days == 0 && hours > 0) {
             return hours + "h";
         } else {
             return minutes + "m";
